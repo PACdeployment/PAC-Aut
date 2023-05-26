@@ -44,7 +44,7 @@ resource assignment1 'Microsoft.Authorization/policyAssignments@2020-09-01' = {
     ]
   }
 }
-
+// RESOURCES defined in the parent template
 resource assignment2 'Microsoft.Authorization/policyAssignments@2020-09-01' = {
   //level2
   name: assignment2Name
