@@ -18,4 +18,4 @@ jobs:
       - name: Bicep CI
         uses: pchettri3/bicep-build-actions
         with:
-          files: ./PAC-Autmain.bicep
+          files: ./main.bicep
