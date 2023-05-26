@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "8509020682676831248"
+    }
+  },
+  "parameters": {
+    "policySource": {
+      "type": "string"
+    },
+    "policyCategory": {
+      "type": "string"
+    },
+    "mandatoryTag1Key": {
+      "type": "string"
+    },
+    "mandatoryTag1Value": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/policyDefinitions",
+      "apiVersion": "2020-09-01",
+      "name": "addTagToRG",
+      "properties": {
+        "displayName": "Add tag to resource group",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Adds the mandatory tag key when any resource group missing this tag is created or updated. Existing resource groups can be remediated by triggering a remediation task. If the tag exists with a different value it will not be changed.",
+        "metadata": {
+          "category": "[parameters('policyCategory')]",
+          "source": "[parameters('policySource')]",
+          "version": "0.1.0"
+        },
+        "parameters": {
+          "tagName": {
+            "type": "String",
+            "metadata": {
+              "displayName": "[format('Mandatory Tag {0}', parameters('mandatoryTag1Key'))]",
+              "description": "[format('Name of the tag, such as {0}', parameters('mandatoryTag1Key'))]"
+            },
+            "defaultValue": "BicepTagName"
+          },
+          "tagValue": {
+            "type": "String",
+            "metadata": {
+              "displayName": "[format('Tag Value {0}', parameters('mandatoryTag1Value'))]",
+              "description": "[format('Value of the tag, such as {0}', parameters('mandatoryTag1Value'))]"
+            },
+            "defaultValue": "tempvalue"
+          }
+        },
+        "policyRule": {
+          "if": {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+              },
+              {
+                "field": "[[concat('tags[', parameters('tagName'), ']')]",
+                "exists": "false"
+              }
+            ]
+          },
+          "then": {
+            "effect": "modify",
+            "details": {
+              "roleDefinitionIds": [
+                "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+              ],
+              "operations": [
+                {
+                  "operation": "add",
+                  "field": "[[concat('tags[', parameters('tagName'), ']')]",
+                  "value": "[[parameters('tagValue')]"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "policyID": {
+      "type": "string",
+      "value": "[subscriptionResourceId('Microsoft.Authorization/policyDefinitions', 'addTagToRG')]"
+    }
+  }
+}
