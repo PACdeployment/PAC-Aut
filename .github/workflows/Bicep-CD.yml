@@ -1,0 +1,68 @@
+name: Bicep-CD
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - '**.bicep'
+  workflow_dispatch:
+#   schedule:
+#   - cron: "0 0 * * *" #at the end of every day
+    
+jobs:
+
+  DEV-BICEP-CD:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_DEVPAC }}
+    - name: Bicep CD
+      id: bicepCD
+      continue-on-error: true
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az deployment sub create -n DEV-bicep-cd -f ./PAC-Autmain.bicep -l westus2 -p ./Bicep/Level3/param-dev-pol.json -o none
+    - name: Sleep for 30s
+      if: ${{ steps.bicepCD.outcome == 'failure' && steps.bicepCD.conclusion == 'success' }}
+      uses: pchettri3/sleep-action
+      with:
+        time: 30s
+    - name: Bicep CD Retry
+      if: ${{ steps.bicepCD.outcome == 'failure' && steps.bicepCD.conclusion == 'success' }}
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az deployment sub create -n DEV-bicep-cd -f ./PAC-Autmain.bicep -l westus2 -p ./Bicep/Level3/param-dev-pol.json -o none
+
+  PROD-BICEP-CD:
+    needs: DEV-BICEP-CD
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_PRODPAC }}
+    - name: Bicep CD
+      id: bicepCD
+      continue-on-error: true
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az deployment sub create -n PROD-bicep-cd -f ./PAC-Autmain.bicep -l westus2 -p ./Bicep/Level3/param-prod-pol.json -o none
+    - name: Sleep for 30s
+      if: ${{ steps.bicepCD.outcome == 'failure' && steps.bicepCD.conclusion == 'success' }}
+      uses: pchettri3/sleep-action
+      with:
+        time: 30s
+    - name: Bicep CD Retry
+      if: ${{ steps.bicepCD.outcome == 'failure' && steps.bicepCD.conclusion == 'success' }}
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az deployment sub create -n PROD-bicep-cd -f ./PAC-Autmain.bicep -l westus2 -p ./Bicep/Level3/param-prod-pol.json -o none
+
+  
