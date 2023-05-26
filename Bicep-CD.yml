@@ -55,7 +55,7 @@ jobs:
           az deployment sub create -n PROD-bicep-cd -f ./PAC-Autmain.bicep -l westus2 -p ./Bicep/Level3/param-prod-pol.json -o none
     - name: Sleep for 30s
       if: ${{ steps.bicepCD.outcome == 'failure' && steps.bicepCD.conclusion == 'success' }}
-      uses: pchettri3/sleep-action
+      uses: juliangruber/sleep-action
       with:
         time: 30s
     - name: Bicep CD Retry

@@ -16,6 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Bicep CI
-        uses: pchettri3/bicep-build-actions
+        uses: juliangruber/bicep-build-actions
         with:
           files: ./PAC-Autmain.bicep
