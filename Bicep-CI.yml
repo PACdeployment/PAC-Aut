@@ -18,4 +18,4 @@ jobs:
       - name: Bicep CI
         uses: aliencube/bicep-build-actions@v0.1
         with:
-          files: ./Bicep/Level3/main.bicep
+          files: ./PAC-Autmain.bicep
