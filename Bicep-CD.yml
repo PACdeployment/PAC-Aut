@@ -24,7 +24,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          az deployment sub create -n DEV-bicep-cd -f ./main.bicep -l westus2 -p ./Bicep/Level3/param-dev-pol.json -o none
+          az deployment sub create -n DEV-bicep-cd -f ./main.bicep -l westus2 -p ./param-dev-pol.json -o none
     - name: Sleep for 30s
       if: ${{ steps.bicepCD.outcome == 'failure' && steps.bicepCD.conclusion == 'success' }}
       uses: pchettri3/sleep-action

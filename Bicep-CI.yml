@@ -18,4 +18,4 @@ jobs:
       - name: Bicep CI
         uses: juliangruber/bicep-build-actions
         with:
-          files: ./PAC-Autmain.bicep
+          files: ./main.bicep
